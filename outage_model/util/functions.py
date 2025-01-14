@@ -24,7 +24,6 @@ def normalize(val, mini, range):
     y = (val - mini) / range 
     return y
 
-# Function to find the max, mean, and minimum value of feature data passed
 def findStats(feature):
 
     meanFeat = np.mean(feature)
@@ -72,9 +71,7 @@ def normalizeDataset(datasets, sF, featureNames):
             normalized_features = torch.tensor(normalized_features, dtype=torch.float)
             processed[category] = normalized_features
 
-        ##Target
         raw_data = np.copy(dataset["targets"].detach().numpy())
-        # normalized_data = normalize(raw_data, float(sF["meanProb"]), float(sF["rangeProb"]))
         processed["targets"] = torch.tensor(raw_data, dtype=torch.float)
         processed["coordinates"] = np.copy(dataset["coordinates"])
 
@@ -82,43 +79,22 @@ def normalizeDataset(datasets, sF, featureNames):
     
     return transformed
 
-# GAT Model Training Function
 def trainGAT(model, node_static_features, edge_static_features, node_dynamic_features, edge_index, targets, optimizer, criterion, rangeImpact):
-    # Set model into training model
     model.train()
-    # Initialize the optimizer's gradient
     optimizer.zero_grad()
-    
-    # Pass data to model to get estimated output
     outputs = model(node_static_features, edge_static_features, node_dynamic_features, edge_index)
-    
-    # Calculate the loss of the measured vs estimated output
     loss = criterion(outputs.view(-1, 1), targets.view(-1, 1))
-    
-    # Compute the gradient of the loss with respect to all the model parameters
     loss.backward()
-    
-    # Perform a parameter update
     optimizer.step()
-    
-    # Return the loss
     return loss.item()
 
-# Model Validation Function
 def validGAT(model, node_static_features,edge_static_features, node_dynamic_features, edge_index, targets, optimizer, criterion, rangeImpact):
-    # Set the model into evaluation mode
     model.eval()
 
-    # Make sure the gradients are not considered  
     with torch.no_grad():
-
-        # Pass the input data to the model to get estimated output
         outputs = model(node_static_features, edge_static_features, node_dynamic_features, edge_index)
-
-        # Calculate the loss of the measured vs estimated output
         loss = criterion(outputs.view(-1, 1), targets.view(-1, 1))
     
-    # Return the loss
     return loss.item()
 
 def trainValidate(model, optimizer, criterion, device, nDatasets_t, nDatasets_v, sF, epochs=1500,validation_scale=1.0, output_dict=None):
@@ -162,19 +138,13 @@ def trainValidate(model, optimizer, criterion, device, nDatasets_t, nDatasets_v,
     return tLOSS, vLOSS
 
 def validateGAT(model, node_static_features,edge_static_features, node_dynamic_features, edge_index, targets, optimizer, criterion, rangeImpact):
-    # Set the model into evaluation mode
     model.eval()
  
-    # Make sure the gradients are not considered  
     with torch.no_grad():
  
-        # Pass the input data to the model to get estimated output
         outputs = model(node_static_features, edge_static_features, node_dynamic_features, edge_index)
  
-        # Calculate the loss of the measured vs estimated output
-        #loss = criterion(outputs.view(-1, 1)/rangeImpact, targets.view(-1, 1)/rangeImpact)
         loss = criterion(outputs.view(-1, 1), targets.view(-1, 1))
-    # Return the loss
     return outputs, loss.item()
 
 def plotTreeWithProb(tree, probabilities, title, pos):
@@ -190,27 +160,17 @@ def plotTreeWithProb(tree, probabilities, title, pos):
         Displays a visual representation of the network graph with nodes colored according to their outage probabilities.
     """
        
-    # Create a figure and an axis with constrained layout for better spacing
     fig, ax = plt.subplots(constrained_layout=True)
  
-    # Create a custom colormap from green to red
     green_red_colormap = LinearSegmentedColormap.from_list('GreenRed', ['green', 'red'])
  
-    # Map each probability to a color in the colormap and store these colors
     nodeColors = [green_red_colormap(prob) for prob in probabilities]
-    # Draw the tree graph with customized node colors and styles
     nx.draw(tree, pos=pos, ax=ax,with_labels=False, node_color=nodeColors, node_size=80,
             arrowsize=7, arrowstyle='fancy', arrows=False, font_size=12)
  
-    # Create a ScalarMappable to interpret the colormap scale properly
     scalarmappaple = plt.cm.ScalarMappable(cmap=green_red_colormap, norm=plt.Normalize(vmin=0, vmax=1))
-    # Add a colorbar to the axis using the ScalarMappable, and set its label
     cbar = fig.colorbar(scalarmappaple, ax=ax)
     cbar.set_label('Probability of an Outage')
  
-    # Set the title of the plot
     plt.title(title)
-    # Display the plot
     plt.show()
-
-

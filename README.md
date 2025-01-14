@@ -54,9 +54,11 @@ Below are example commands for two types of datasets: Real Weather and Synthetic
 
 Before Running These Commands
 
-1. Download the datasets from the links provided (not shown here).
-2. Create a new folder called ./model_data in the root directory of this project.
-3. Place the downloaded .hdf5 files in the ./model_data folder.
+# Instructions
+
+1. [Download the datasets from this link.](https://figshare.com/articles/dataset/Real_World_and_Synthetic_Datasets_from_Predicting_Extreme_Weather-Induced_Outages_in_Distribution_Networks_Using_Graph-Based_Neural_Network_Models_/28204925/1?file=51675710)
+2. Create a new folder called `./model_data` in the root directory of this project.
+3. Place the downloaded `.hdf5` files in the `./model_data` folder.
 
 ### Real Weather Dataset
 
